@@ -1,26 +1,218 @@
-\documentclass[a4paper,14pt]{article}
+\documentclass[oneside]{book}
 \usepackage{datetime}
-\usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage[color={[gray]{1}}]{draftwatermark}
-
-\SetWatermarkText{The rightful author of this document can be found at N00bcak.github.io.}
-
+\usepackage{xcolor}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[theorems,breakable]{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	citecolor=red!80!black,
+}
 
 \begin{document}
+	%Assorted Document Settings & Initial Configurations
+	\pagenumbering{arabic}
+	\newtcbtheorem[number within=chapter]{theo}{Theorem}{breakable,colback=blue!5,colframe=blue!40!black}{th}
+	\newtcbtheorem[number within=tcb@cnt@theo]{cor}{Corollary}{breakable,colback=blue!20,colframe=blue!80!black}{cr}
+	\newtcbtheorem{defn}{Definition}{theorem name,colback=orange!20,colframe=orange!80!black}{defn}
+	\newtcolorbox{sk}{colback=green!5,colframe=green!40!black,title=Sketch}
+	\newtcolorbox{rmk}{colback=yellow!5,colframe=yellow!40!black,title=Remark}
+	\newtcolorbox{pr}{colback=orange!5,colframe=orange!80!black,title=Proof}
+	\SetWatermarkText{The rightful author of this document can be found at N00bcak.github.io.}
+
+% I need to figure out what to do with this snippet, TeXStudio made it so ugly because it messed up the positions of the percentage signs.	
+	%	\begin{theo}{}{T1.1}
+		%		A theorem.
+		%		\begin{sk}
+			%			{Lorem ipsum dolor sit amet this is a proof.}
+			%		\end{sk}   
+		%		\begin{pr}
+			%			{Lorem ipsum dolor sit amet this is a proof.}
+			%		\end{pr}   
+		%	\end{theo}
+	%	\begin{cor}{Title}{C1.1}
+		%		This is a corollary of Theorem \ref{th:T1.1}.
+		%	\end{cor}
+	%	\begin{defn}{title}{D1.1}
+		%		This is a definition.
+		%	\end{defn}
 	
 	%Title
 	\title{Linear Algebra Organised}
 	\author{N00bcak}
 	
 	\newdate{date}{21}{03}{2022}
-	\date{\displaydate{date}}
+	%\date{\displaydate{date}}
 	\maketitle
 	
-	%Other Assorted Document Settings
-	\pagenumbering{arabic}
-	\tableofcontents
+	\chapter*{Preface}
+	
+	I hope that this set of notes will provide a comprehensive look at some of the most fundamental aspects of linear algebra. At the very least, because I wrote these notes principally FOR understanding, they should be a much easier read than Hoffman and Kunze etc.
+	
+	These notes assume a familiarity with high school mathematics and a little bit of group theory, because those concepts can easily be googled or thought through within a few minutes. Aside from that, for theorems and lemmas in general I will offer very brief exposition before explaining the broad structure of the proof (colored in green), before finally painstakingly providing a detailed proof (provided in orange).
+	
+	I don't really have much else to say so let's just get into it.
+	
+	{
+		\hypersetup{linkcolor=black}
+		\tableofcontents
+	}
+	\chapter{The Basics}
+	
+	This chapter is responsible for laying the foundations of whatever you are going to read in these notes, that is, the fundamental language with which linear algebra is expressed. 
+	
+	I will be using a \href{https://simple.wikipedia.org/wiki/Field_(mathematics)}{field} in most of my definitions because they cover the full range of real and complex arithmetic.
+	
+	\section{Systems of Linear Equations}
+	Among the core objects of study in linear algebra are linear equations and systems thereof, which frequently appear in science and mathematics.
+	
+	While there is obviously far more to studying linear algebra, of particular interest in this section are the solution(s) to these systems which we will explore in detail.
+	
+	We first get the pesky definitions out of the way:
+	\begin{defn}{Linear Equation}{Dlineq}
+		Where F is any field, $(c_1,c_2,\ldots,c_{n+1})$ are constants in F while $(x_1,x_2,\ldots,x_n)$ are variables in F, a \textbf{linear equation} in \textbf{n variables} is any equation of the form
+		\begin{equation}
+			\label{eq:lineq}
+			c_1x_1+c_2x_2+\ldots+c_nx_n=c_{n+1}
+		\end{equation}
+	\end{defn}
+	\textit{Remark.} Often you will notice that the left hand side of \ref{eq:lineq} is called a \textbf{linear combination} of the variables $(x_1,x_2,\ldots,x_n)$.
+	
+	\begin{defn}{System of Linear Equations}{Dsyslineq}
+		A \textbf{system of m linear equations in n unknowns} is a collection of m linear equations involving n variables. (An example is provided below):
+	\begin{equation}
+		\label{eq:syslineq}
+		\left\{
+		\begin{alignedat}{4} 
+			c_{1,1}x_1 & +{} &  c_{1,2}x_2 & +{} & \ldots & +{} & c_{1,n}x_n & = c_{1,n+1} \\
+			c_{2,1}x_1 & +{} &  c_{2,2}x_2 & +{} & \ldots & +{} & c_{2,n}x_n & = c_{2,n+1} \\
+			\vdots \\
+			c_{m,1}x_1 & +{} &  c_{m,2}x_2 & +{} & \ldots & +{} & c_{m,n}x_n & = c_{m,n+1} \\
+		\end{alignedat}
+		\right.
+	\end{equation}
+	\end{defn}
+	\textit{Remark.} If $c_{1,n+1}=c_{2,n+1}=\ldots=c_{m,n+1}=0$, our system of linear equations is \textbf{homogeneous}.
+
+	\begin{defn}{Solutions of a System}{Dsollineq}
+		For any system of linear equations (\ref{eq:syslineq}), if a collection of n \textbf{values} (also known as an n-tuple) $D=(d_1,d_2,\ldots,d_n)$ all in F are such that the system is satisfied by setting $x_1=d_1, x_2=d_2, \ldots, x_n=d_n$ is called a \textbf{solution of the system of linear equations}.
+		
+		The collection of all such n-tuples that satisfy the system of equations is also known as a \textbf{solution set} of the system. We will mathematically describe solution sets in a later section.
+	\end{defn}
+	
+	By playing around with the definitions above (perhaps by substituting the constant values for numbers), a few facts about the solutions of systems should become apparent. Unfortunately these same observations were made by Gauss centuries earlier so you will not become a famous mathematician for your endeavours :(.
+	
+	\begin{theo}{Gaussian Elimination}{T1.1}
+		If one system of linear equations is manipulated into another by the following actions:
+		\begin{enumerate}
+			\item Rescaling (Multiplication of both sides of one equation by a non-zero constant.)
+			\item Row Combination (Addition of a non-zero multiple of equation i to both sides of another equation j)
+			\item Swapping (Swapping of two equations)
+		\end{enumerate}
+		The solution set of the new system of linear equations is the same as the original system, that is, these two systems of linear equations are \textbf{equivalent}.
+	\end{theo}
+	\begin{pr}
+		Let a system of n linear equations be such that it has a solution $D=(d_1,d_2,\ldots,d_n) \in S$ where $d_1,d_2,\ldots,d_n$ are all in F and $S$ is the solution set of the original system of linear equations. Similarly, let $S'$ be the solution set of the new system of linear equations.
+	\begin{enumerate}
+		\item If $D$ is a solution of an equation i then $D$ satisfies
+		
+		\begin{equation*}
+			\sum_{k=1}^{n}{c_{i,k}x_k}=c_{i,n+1}
+		\end{equation*}
+		
+		Hence if we multiplied both sides of this equation by a constant $g$ in F, obviously
+		
+		\begin{equation*}
+			g(\sum_{k=1}^{n}{c_{i,k}x_k})=g(c_{i,n+1})
+		\end{equation*}
+		is satisfied by $D$. This implies that $S \subseteq S'$.
+		
+		By multiplying the above equation by $\frac{1}{g}$ in F, we get 			\begin{equation*}
+			g(\sum_{k=1}^{n}{c_{i,k}x_k})=g(c_{i,n+1})
+			\implies 
+			\sum_{k=1}^{n}{c_{i,k}x_k}=c_{i,n+1}
+		\end{equation*}
+		so we see that every solution $D' \in S'$ satisfying the new system of equations also satisfies the original system of equations. So $S' \subseteq S \implies S=S'$.
+	\item If $D$ satisfies equations i and j then it should satisfy
+	\begin{equation}
+		\label{eq:rowcomb}
+		g(\sum_{k=1}^{n}{c_{i,k}x_k})+\sum_{k=1}^{n}{c_{j,k}x_k}=g(c_{i,n+1})+c_{j,n+1}
+	\end{equation}
+
+	Conversely if $D$ satisfies \ref{eq:rowcomb} then it should satisfy	
+	\begin{equation*}
+		\begin{split}
+			g(\sum_{k=1}^{n}{c_{i,k}x_k})+\sum_{k=1}^{n}{c_{j,k}x_k}		-g(\sum_{k=1}^{n}{c_{i,k}x_k})&=g(c_{i,n+1})+c_{j,n+1} \\
+			&-g(c_{i,n+1}) \\
+			\implies \sum_{k=1}^{n}{c_{j,k}x_k}=c_{j,n+1} &
+		\end{split}
+	\end{equation*}
+	
+	\item Nothing fundamentally changes about the system of equations except the order in which the equations are written. If $D$ satisfies all equations in the system, it will still do so after two equations are swapped. $\blacksquare$
+	\end{enumerate}
+	\end{pr}
+	\textit{Remark.} Gaussian Elimination is why we can solve systems of linear equations manually via an 'eliminate-and-substitute' strategy, the solving technique taught in secondary/high schools that you should be familiar with.
+	
+	\textit{Remark.} The proof given above elides an explicit statement of the invertibility of each of these operations. This will be clarified in the next section.
+	
 	\newpage
-	hi
+	
+	\section{Matrices}
+	
+	Another building block of the mathematical language of linear algebra is the matrix, which among various other functions provides a neat shorthand with which we can describe systems of linear equations.
+	
+	\begin{defn}{Matrix}{Dmatrix}
+		Generally, where $i,j,m,n \in \mathbb{Z^+}$, an $m \times n$ \textbf{matrix} A is an array of \textit{numerical entries} with $m$ rows and $n$ columns. We denote the entry in the $i^{th}$ row and $j^{th}$ column as $A_{ij}$. 
+		
+		However, an alternative, more formal definition is possible:
+		
+		(Hoffman and Kunze) An $m \times n$ \textbf{matrix} A is a function mapping the ordered pairs $(i,j), 1 \leq i \leq m, 1 \leq j \leq n$ to numbers in a field F.
+	\end{defn}
+	We should also note that matrices come equipped with the following operations:
+	\begin{enumerate}
+		\item Addition: 
+			\begin{align*}
+				(A+B)_{ij}=A_{ij}+B_{ij}
+			\end{align*}
+		where A and B are any $m \times n$ matrices.
+		\item Multiplication: 
+			\begin{align*}
+				(AB)_{ij}=\sum_{k=1}^{r}{A_{ik}B_{kj}} 
+			\end{align*}
+		Note that A must have $r$ columns while B must have $r$ rows. If A is a $q \times r$ matrix while B is a $r \times s$ matrix, then AB is a $q \times s$ matrix.
+		\item Transposition:
+		\begin{align*}
+			(A^t)_{ij}=A_{ji}
+		\end{align*} 
+		where A and B are any $m \times n$ matrices.
+	\end{enumerate}
+
+	There also exist special cases of matrices important enough to have their own names (though we will only define the relevant ones now):
+	
+	\begin{defn}{Column/Row Vector}{Dcolrow}
+		A \textbf{column vector} is an $n \times 1$ matrix.
+		
+		A \textbf{row vector} is a $1 \times n$ matrix.
+	\end{defn}
+	\textit{Remark.} This is what most people think of when they hear/say a vector. Naturally, a vector is more general than that
+	\begin{defn}{Zero Matrix}{Dzeromat}
+		A \textbf{zero matrix} $0^{m \times n}$ is any matrix whose entries are \textbf{all} zero.
+	\end{defn}
+	\begin{defn}{Square Matrix}{Dsqmat}
+		A \textbf{square matrix} is an $n \times n$ matrix.
+	\end{defn}
+	\begin{defn}{Identity Matrix}{Dimat}
+		A \textbf{identity matrix} is an $n \times n$ matrix whose entries on the main diagonal are 1 and all other entries are zero.
+		
+		(Using \href{https://en.wikipedia.org/wiki/Kronecker_delta}{Kronecker Delta}) An \textbf{identity matrix} $I^{n \times n}$ is such that $I_{ij}=\delta_{ij}$.
+	\end{defn}
+
+		
+
+
 \end{document}
