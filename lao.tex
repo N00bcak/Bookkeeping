@@ -9,6 +9,7 @@
 \usepackage{amssymb}
 \usepackage[theorems,breakable]{tcolorbox}
 \usepackage{hyperref}
+\usepackage{nameref}
 \hypersetup{
 	colorlinks=true,
 	citecolor=red!80!black,
@@ -20,9 +21,9 @@
 	\newtcbtheorem[number within=chapter]{theo}{Theorem}{breakable,colback=blue!5,colframe=blue!40!black}{th}
 	\newtcbtheorem[number within=tcb@cnt@theo]{cor}{Corollary}{breakable,colback=blue!20,colframe=blue!80!black}{cr}
 	\newtcbtheorem{defn}{Definition}{theorem name,colback=orange!20,colframe=orange!80!black}{defn}
-	\newtcolorbox{sk}{colback=green!5,colframe=green!40!black,title=Sketch}
+	\newtcolorbox{sk}{breakable,colback=green!5,colframe=green!40!black,title=Sketch}
 	\newtcolorbox{rmk}{colback=yellow!5,colframe=yellow!40!black,title=Remark}
-	\newtcolorbox{pr}{colback=orange!5,colframe=orange!80!black,title=Proof}
+	\newtcolorbox{pr}{breakable,colback=orange!5,colframe=orange!80!black,title=Proof}
 	\SetWatermarkText{The rightful author of this document can be found at N00bcak.github.io.}
 
 % I need to figure out what to do with this snippet, TeXStudio made it so ugly because it messed up the positions of the percentage signs.	
@@ -52,7 +53,7 @@
 	
 	\chapter*{Preface}
 	
-	I hope that this set of notes will provide a comprehensive look at some of the most fundamental aspects of linear algebra. At the very least, because I wrote these notes principally FOR understanding, they should be a much easier read than Hoffman and Kunze etc.
+	I hope that this set of notes will provide a comprehensive summary of some of the most fundamental aspects of linear algebra. At the very least, because I wrote these notes principally FOR understanding, they should be a much easier read than Hoffman and Kunze etc, even if they \textbf{by design do not offer much in the way of motivation}.
 	
 	These notes assume a familiarity with high school mathematics and a little bit of group theory, because those concepts can easily be googled or thought through within a few minutes. Aside from that, for theorems and lemmas in general I will offer very brief exposition before explaining the broad structure of the proof (colored in green), before finally painstakingly providing a detailed proof (provided in orange).
 	
@@ -75,13 +76,13 @@
 	
 	We first get the pesky definitions out of the way:
 	\begin{defn}{Linear Equation}{Dlineq}
-		Where F is any field, $(c_1,c_2,\ldots,c_{n+1})$ are constants in F while $(x_1,x_2,\ldots,x_n)$ are variables in F, a \textbf{linear equation} in \textbf{n variables} is any equation of the form
+		Where F is any field, $(c_1,c_2,\ldots,c_{n+1})$ are constants in F and $(x_1,x_2,\ldots,x_n)$ are variables in F, a \textbf{linear equation} in \textbf{n variables} is any equation of the form
 		\begin{equation}
 			\label{eq:lineq}
 			c_1x_1+c_2x_2+\ldots+c_nx_n=c_{n+1}
 		\end{equation}
 	\end{defn}
-	\textit{Remark.} Often you will notice that the left hand side of \ref{eq:lineq} is called a \textbf{linear combination} of the variables $(x_1,x_2,\ldots,x_n)$.
+	\textit{Remark.} In academic texts, the left hand side of \ref{eq:lineq} is often called a \textbf{linear combination} of the variables $(x_1,x_2,\ldots,x_n)$.
 	
 	\begin{defn}{System of Linear Equations}{Dsyslineq}
 		A \textbf{system of m linear equations in n unknowns} is a collection of m linear equations involving n variables. (An example is provided below):
@@ -117,38 +118,40 @@
 		The solution set of the new system of linear equations is the same as the original system, that is, these two systems of linear equations are \textbf{equivalent}.
 	\end{theo}
 	\begin{pr}
-		Let a system of n linear equations be such that it has a solution $D=(d_1,d_2,\ldots,d_n) \in S$ where $d_1,d_2,\ldots,d_n$ are all in F and $S$ is the solution set of the original system of linear equations. Similarly, let $S'$ be the solution set of the new system of linear equations.
+		Let a system of n linear equations be such that it has a solution $D=(d_1,d_2,\ldots,d_n) \in S$ where $d_1,d_2,\ldots,d_n$ are all in F and $S$ is the solution set of the original system of linear equations. Similarly, let $S'$ be the solution set of the new system of linear equations constructed by multiplying the $i^{th}$ equation in the system by g $\in$ F $\backslash$ \{0\}.
 	\begin{enumerate}
-		\item If $D$ is a solution of an equation i then $D$ satisfies
+		\item If $D$ is a solution of the system then it satisfies the $i^{th}$ equation, i.e.
 		
 		\begin{equation*}
-			\sum_{k=1}^{n}{c_{i,k}x_k}=c_{i,n+1}
+			\sum_{k=1}^{n}{c_{i,k}d_k}=c_{i,n+1}
 		\end{equation*}
 		
-		Hence if we multiplied both sides of this equation by a constant $g$ in F, obviously
+		Hence if we multiplied both sides of this equation by a constant $g \in$ F $\backslash$ \{0\}, obviously
 		
 		\begin{equation*}
-			g(\sum_{k=1}^{n}{c_{i,k}x_k})=g(c_{i,n+1})
+			g\sum_{k=1}^{n}{c_{i,k}d_k}=g \cdot c_{i,n+1}
 		\end{equation*}
-		is satisfied by $D$. This implies that $S \subseteq S'$.
+		This implies that $S \subseteq S'$.
 		
-		By multiplying the above equation by $\frac{1}{g}$ in F, we get 			\begin{equation*}
-			g(\sum_{k=1}^{n}{c_{i,k}x_k})=g(c_{i,n+1})
+		Now let D' = $(d'_1,d'_2,\ldots,d'_n)$ be a solution of the new system.
+		By multiplying the above equation by $\frac{1}{g}$ in F, we get 			
+		\begin{equation*}
+			g\sum_{k=1}^{n}{c_{i,k}d_k}=g \cdot c_{i,n+1}
 			\implies 
-			\sum_{k=1}^{n}{c_{i,k}x_k}=c_{i,n+1}
+			\sum_{k=1}^{n}{c_{i,k}d_k}=c_{i,n+1}
 		\end{equation*}
 		so we see that every solution $D' \in S'$ satisfying the new system of equations also satisfies the original system of equations. So $S' \subseteq S \implies S=S'$.
-	\item If $D$ satisfies equations i and j then it should satisfy
+	\item If $D$ satisfies the system of equations then it should satisfy
 	\begin{equation}
 		\label{eq:rowcomb}
-		g(\sum_{k=1}^{n}{c_{i,k}x_k})+\sum_{k=1}^{n}{c_{j,k}x_k}=g(c_{i,n+1})+c_{j,n+1}
+		g \cdot \sum_{k=1}^{n}{c_{i,k}x_k}+\sum_{k=1}^{n}{c_{j,k}x_k}=g\cdot c_{i,n+1}+c_{j,n+1}
 	\end{equation}
 
 	Conversely if $D$ satisfies \ref{eq:rowcomb} then it should satisfy	
 	\begin{equation*}
 		\begin{split}
-			g(\sum_{k=1}^{n}{c_{i,k}x_k})+\sum_{k=1}^{n}{c_{j,k}x_k}		-g(\sum_{k=1}^{n}{c_{i,k}x_k})&=g(c_{i,n+1})+c_{j,n+1} \\
-			&-g(c_{i,n+1}) \\
+			g \cdot \sum_{k=1}^{n}{c_{i,k}x_k}+\sum_{k=1}^{n}{c_{j,k}x_k}-g \cdot\sum_{k=1}^{n}{c_{i,k}x_k}&=g \cdot c_{i,n+1}+c_{j,n+1} \\
+			&-g \cdot c_{i,n+1} \\
 			\implies \sum_{k=1}^{n}{c_{j,k}x_k}=c_{j,n+1} &
 		\end{split}
 	\end{equation*}
@@ -199,7 +202,7 @@
 		
 		A \textbf{row vector} is a $1 \times n$ matrix.
 	\end{defn}
-	\textit{Remark.} This is what most people think of when they hear/say a vector. Naturally, a vector is more general than that
+	\textit{Remark.} This is what most people think of when they hear/say a vector. Naturally, a vector is more general than that.
 	\begin{defn}{Zero Matrix}{Dzeromat}
 		A \textbf{zero matrix} $0^{m \times n}$ is any matrix whose entries are \textbf{all} zero.
 	\end{defn}
@@ -212,7 +215,158 @@
 		(Using \href{https://en.wikipedia.org/wiki/Kronecker_delta}{Kronecker Delta}) An \textbf{identity matrix} $I^{n \times n}$ is such that $I_{ij}=\delta_{ij}$.
 	\end{defn}
 
-		
+	\textit{Remarks.} It is also possible to (informally) define a matrix recursively in terms of smaller matrices. A \textbf{block matrix} is any $n \times m$ matrix which can be thought of as comprising of several smaller matrices such that matrices in the same sectioned-off row or column have the same height or width. Usually, a block matrix can be denoted in the manner below:
+	
+	$$\left(\begin{array}{@{}c|c|c|c@{}}
+		M_{1,1} & M_{1,2} & \dots & M_{1, r} \\ \hline
+		M_{2,1} & M_{2,2} & \dots & M_{2, r} \\ \hline
+		\vdots & \vdots & \ddots & \vdots \\ \hline
+		M_{s,1} & M_{s,2} & \dots & M_{s, r} \\
+		\end{array}\right)$$
+	
+	where $M_{i,j}$ is an $h_i \times w_j$ matrix s.t. $\sum_{i=1}^{h_i} = s$ and $\sum_{i=1}^{w_i} = r$.
+	
+	\newpage
+	
+	\section{Elementary Row Operations}
 
+	Using \nameref{defn:Dmatrix} and \nameref{defn:Dcolrow}, we can rehash the definition in \nameref{defn:Dsyslineq}.
+	
+	 \begin{defn}{System of Linear Equations (Matrix Multiplication Form)}{Dsyslineqmatmul}
+	 	(See \nameref{defn:Dsyslineq})
+	 	A \textbf{system of m linear equations in n unknowns} can be written as the matrix product
+	 	\begin{equation*}
+	 		\begin{split}
+	 			AX &= Y.
+	 		\end{split}
+	 	\end{equation*}
+		where A is an $m \times n$ matrix and X and Y are $m \times 1$ column vectors.	 
+ 	\end{defn}
+ 
+ 	This analogue of \nameref{defn:Dsyslineq} is also equipped with operations that behave similarly to those in \nameref{th:T1.1}, except they act on matrices instead of equations. These Elementary Row Operations are defined below:
+	\begin{enumerate}
+		\item Rescaling ($e_r$):
+		\begin{align*}
+			e_r(A, g, k)_{ij} =\begin{cases}
+				g \cdot A_{ij} & \text{if } i = k \\
+				A_{ij} & \text{otherwise}
+			\end{cases}
+		\end{align*}
+		where A is any $m \times n$ matrix.
+		\item Row Combination ($e_{rc}$): 
+		\begin{align*}
+			e_{rc}(A, g, r, s)_{ij} =\begin{cases}
+				g \cdot A_{rj} + A_{sj} & \text{if } i = s \\
+				A_{ij} & \text{otherwise}
+			\end{cases}
+		\end{align*}
+		where A is any $m \times n$ matrix.
+		\item Swapping ($e_s$):
+		\begin{align*}
+			e_s(A, r, s)_{ij} =\begin{cases}
+				A_{sj} & \text{if } i = r \\
+				A_{rj} & \text{if } i = s \\
+				A_{ij} & \text{otherwise}
+			\end{cases}
+		\end{align*} 
+	where A is any $m \times n$ matrix.
+	\end{enumerate}
+
+	Of particular note is the invertibility of these operations.
+	\begin{theo}{Invertibility of Elementary Row Operations}{T1.2}
+		The \textbf{elementary row operations} $e_r, e_{rc}, e_s$ are invertible.
+	\end{theo}
+	\begin{pr}
+		\begin{sk}
+			Since they are easy enough to see, we will simply exhibit the inverse functions themselves.
+		\end{sk}
+		\begin{itemize}
+		\item The inverse of $e_r$.
+		
+		Consider the operation 
+		\begin{align*}
+			e'_r(A)_{ij} =\begin{cases}
+				\frac{1}{g} \cdot A_{ij} & \text{if } i = k \\
+				A_{ij} & \text{otherwise}
+			\end{cases}
+		\end{align*}
+		Quite clearly, 
+		\begin{align*}
+			e'_r(e_r(A), g, k)_{ij} &=\begin{cases}
+				\frac{1}{g} \cdot g \cdot A_{ij} & \text{if } i = k \\
+				A_{ij} & \text{otherwise}
+			\end{cases}\\
+		&= A_{ij}
+		\end{align*}
+	
+		\item The inverse of $e_{rc}$.
+		
+		Consider the operation
+		\begin{align*}
+			e'_{rc}(A)_{ij} =\begin{cases}
+				-g \cdot A_{rj} + A_{sj} & \text{if } i = s \\
+				A_{ij} & \text{otherwise}
+			\end{cases}
+		\end{align*}
+		Quite clearly, 
+		\begin{align*}
+		e'_{rc}(e_{rc}(A))_{ij} &=\begin{cases}
+			-g \cdot A_{rj} + g \cdot A_{rj} + A_{sj} & \text{if } i = s \\
+			A_{ij} & \text{otherwise}
+		\end{cases} \\
+		&= A_{ij}
+		\end{align*}
+	
+		Lastly, we note that $e_s$ is its own inverse. Let our matrix A be represented by $\left(\begin{array}{@{}ccc@{}}
+			& a_{1} & \\ \hline
+			& a_{2} & \\ \hline
+			& \vdots & \\ \hline
+			& a_{m} & \\
+		\end{array}\right)$ where $a_{i}$ is a row vector denoting the $i^{th}$ row of A. 
+		
+		Thus, suppose WLOG that $r < s$.
+		\begin{align*}
+			e_s(e_s(A)) & = e_s\left(e_s\left(\left(
+			\begin{array}{@{}ccc@{}}
+				& a_{1} & \\ \hline
+				& a_{2} & \\ \hline
+				& \vdots & \\ \hline
+				& a_{m} & \\
+			\end{array}
+		\right)\right)\right) \\
+		& = e_s\left(\left(
+		\begin{array}{@{}ccc@{}}
+			& a_{1} & \\ \hline
+			& a_{2} & \\ \hline
+			& \vdots & \\ \hline
+			& a_{s} & \\ \hline
+			& \vdots & \\ \hline
+			& a_{r} & \\ \hline
+			& \vdots & \\ \hline
+			& a_{m} & \\
+		\end{array}
+		\right)\right) \\
+		& = \left(\begin{array}{@{}ccc@{}}
+			& a_{1} & \\ \hline
+			& a_{2} & \\ \hline
+			& \vdots & \\ \hline
+			& a_{r} & \\ \hline
+			& \vdots & \\ \hline
+			& a_{s} & \\ \hline
+			& \vdots & \\ \hline
+			& a_{m} & \\
+		\end{array}\right) \\
+		& = A
+		\end{align*}
+		\end{itemize}
+	\end{pr}
+
+	Due to the \nameref{th:T1.2}, if a matrix B may be derived from the matrix A via a series of elementary row operations, the converse is also true. This gives us the following definition.
+	\begin{defn}{Row Equivalence}{Drowequiv}
+		If a matrix B may be derived from the matrix A via a series of elementary row operations, the matrices A and B are said to be \textbf{row equivalent}.
+	\end{defn}
+
+	
+	 
 
 \end{document}
